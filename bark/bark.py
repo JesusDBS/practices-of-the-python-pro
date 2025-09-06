@@ -39,6 +39,22 @@ def get_add_bookmark_data():
 def get_delete_bookmark_data():
     return get_user_input('Bookmark ID')
 
+# def get_import_github_starts_data():
+#     return {
+#         'username': get_user_input('Github username: '),
+#         'preserve_timestamp': get_user_input('Preserve timestamps [Y/n]: ')
+#     }
+
+def github_import_options():
+    return {
+        'github_username': get_user_input('Github username'),
+        'preserve_timestamps': 
+            get_user_input(
+                'Preserve timestamps [Y/n]',
+                required=False
+            ) in {'Y', 'y', None}
+    }
+
 class Option:
     def __init__(self, display_name, command, prep_step=None):
         self.display_name = display_name
@@ -71,6 +87,7 @@ def main():
             'B': Option('List bookmarks by date', commands.ListBookmarksCommand()), 
             'T': Option('List bookmarks by title', commands.ListBookmarksCommand('title')),
             'D': Option('Delete a bookmark', commands.DeleteBookmarksCommand, get_delete_bookmark_data),
+            'G': Option('Import GitHub starts', commands.ImportGithubStarsCommand(), github_import_options),
             'Q': Option('Quit', commands.QuitCommand)
         }
         clear_screen()
