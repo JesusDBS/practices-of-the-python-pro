@@ -51,6 +51,25 @@ class DatabaseManager:
             tuple(criteria.values())
         )
         
+    def update(self, table_name, update_values, criteria):
+        columns_placeholder = [f'{column} = ?' for column in update_values.keys()]
+        columns_to_update = ','.join(columns_placeholder)
+        
+        criteria_placeholders = [f'{column} = ?' for column in criteria.keys()]
+        update_criteria = ' AND '.join(criteria_placeholders)
+        
+        new_columns_values = tuple(update_values.values())
+        update_criteria_values = tuple(criteria.values())
+        
+        self._execute(
+            f"""
+            UPDATE {table_name}
+            SET {columns_to_update}
+            WHERE {update_criteria};
+            """,
+            values= new_columns_values + update_criteria_values
+        )
+        
     def select(self, table_name, criteria=None, order_by=None):
         # placeholders = [f'{column} = ?' for column in criteria.keys()] if criteria else []
         # search_criteria = ' AND '.join(placeholders) if placeholders else ''

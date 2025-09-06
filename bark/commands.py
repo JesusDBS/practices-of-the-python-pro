@@ -170,6 +170,17 @@ class ListBookmarksCommand:
             )
         return res.fetchall()
     
+class EditBookmarksCommand:
+    @classmethod
+    def execute(cls, data):
+        criteria = {'id': data['bookmark_id']}
+        del data['bookmark_id']
+        db.update('bookmarks',
+                  update_values = data,
+                  criteria=criteria
+                  )
+        return 'Bookmark updated!'
+    
 class DeleteBookmarksCommand:
     @classmethod
     def execute(cls, bookmark_id):

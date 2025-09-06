@@ -36,6 +36,17 @@ def get_add_bookmark_data():
         'notes': get_user_input('Notes', False)
     }
     
+def get_update_bookmark_data():
+    data = {
+        'bookmark_id': get_user_input('Bookmark ID'),
+        'title': get_user_input('Title', False),
+        'url': get_user_input('URL', False),
+        'notes': get_user_input('Notes', False),
+        'date_added': get_user_input('Date Added', False)
+        }
+    
+    return {column: value for column, value in data.items() if value}
+    
 def get_delete_bookmark_data():
     return get_user_input('Bookmark ID')
 
@@ -87,6 +98,7 @@ def main():
             'B': Option('List bookmarks by date', commands.ListBookmarksCommand()), 
             'T': Option('List bookmarks by title', commands.ListBookmarksCommand('title')),
             'D': Option('Delete a bookmark', commands.DeleteBookmarksCommand, get_delete_bookmark_data),
+            'U': Option('Update a bookmark', commands.EditBookmarksCommand, get_update_bookmark_data),
             'G': Option('Import GitHub starts', commands.ImportGithubStarsCommand(), github_import_options),
             'Q': Option('Quit', commands.QuitCommand)
         }
