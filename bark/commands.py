@@ -2,14 +2,19 @@ import sys
 import re
 import requests
 from datetime import datetime, timezone
+from abc import ABC, abstractmethod
 
 from database import DatabaseManager
 
 db = DatabaseManager('bookmarks.db')
 
-class CreateBookmarksTableCommand:
-    @classmethod
-    def execute(cls):
+class Command(ABC):
+    @abstractmethod
+    def execute(self, data):
+        raise NotImplementedError
+
+class CreateBookmarksTableCommand(Command):
+    def execute(self, data=None):
         columns = {
             'id': 'INTEGER PRIMARY KEY AUTOINCREMENT', 
             'title': 'TEXT NOT NULL',
@@ -22,12 +27,11 @@ class CreateBookmarksTableCommand:
             columns
         )
         
-class AddBookmarkCommand:
+class AddBookmarkCommand(Command):
     # def __init__(self, preserve_timestamp=False):
     #     self.preserve_timestamp = preserve_timestamp
         
-    @classmethod
-    def execute(cls, data, timestamp=None):
+    def execute(self, data, timestamp=None):
         utc_tz = timezone.utc
         # if not self.preserve_timestamp:
         
@@ -116,7 +120,7 @@ class AddBookmarkCommand:
         
 #         return message
             
-class ImportGithubStarsCommand:
+class ImportGithubStarsCommand(Command):
     @staticmethod
     def _extract_bookmark_info(repo):
         return {
@@ -124,7 +128,7 @@ class ImportGithubStarsCommand:
             'url': repo['html_url'],
             'notes': repo['description']
         }
-        
+    
     def execute(self, data):
         bookmarks_imported = 0
         
@@ -150,7 +154,7 @@ class ImportGithubStarsCommand:
                     timestamp = None
                     
                 bookmarks_imported += 1
-                AddBookmarkCommand.execute(
+                AddBookmarkCommand().execute(
                     self._extract_bookmark_info(repo),
                     timestamp=timestamp
                 )
@@ -158,11 +162,11 @@ class ImportGithubStarsCommand:
         return f'Imported {bookmarks_imported} bookmarks from starred repos!'
         
         
-class ListBookmarksCommand:
+class ListBookmarksCommand(Command):
     def __init__(self, order_by='date_added'):
         self.order_by = order_by
-        
-    def execute(self):
+    
+    def execute(self, data=None):
         # self.order_by = order_by
         res = db.select(
             'bookmarks',
@@ -170,9 +174,8 @@ class ListBookmarksCommand:
             )
         return res.fetchall()
     
-class EditBookmarksCommand:
-    @classmethod
-    def execute(cls, data):
+class EditBookmarksCommand(Command):
+    def execute(self, data):
         criteria = {'id': data['bookmark_id']}
         del data['bookmark_id']
         db.update('bookmarks',
@@ -181,14 +184,12 @@ class EditBookmarksCommand:
                   )
         return 'Bookmark updated!'
     
-class DeleteBookmarksCommand:
-    @classmethod
-    def execute(cls, bookmark_id):
-        db.delete('bookmarks', {'id': bookmark_id})
+class DeleteBookmarksCommand(Command):
+    def execute(self, data=None):
+        db.delete('bookmarks', {'id': data})
         return 'Bookmark deleted!'
     
-class QuitCommand:
-    @classmethod
-    def execute(cls):
+class QuitCommand(Command):
+    def execute(self, data=None):
         sys.exit()
         

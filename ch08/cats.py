@@ -5,14 +5,14 @@ class BigCat:
 
 class Lion(BigCat):  # <1>
     def eats(self):
-        return ['wildebeest']
-        # return super().eats() + ['wildebeest']  # cooperative version
+        # return ['wildebeest']
+        return super().eats() + ['wildebeest']  # cooperative version
 
 
 class Tiger(BigCat):  # <2>
     def eats(self):
-        return ['water buffalo']
-        # return super().eats() + ['water buffalo']  # cooperative version
+        # return ['water buffalo']
+        return super().eats() + ['water buffalo']  # cooperative version
 
 
 class Liger(Lion, Tiger):  # <3>
@@ -27,3 +27,4 @@ if __name__ == '__main__':
     print('The tiger eats', tiger.eats())
     liger = Liger()
     print('The liger eats', liger.eats())
+    print(Liger.__mro__)

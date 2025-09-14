@@ -94,13 +94,13 @@ class Option:
 def main():
     while True:
         options = {
-            'A': Option('Add a bookmark', commands.AddBookmarkCommand, get_add_bookmark_data),
+            'A': Option('Add a bookmark', commands.AddBookmarkCommand(), get_add_bookmark_data),
             'B': Option('List bookmarks by date', commands.ListBookmarksCommand()), 
             'T': Option('List bookmarks by title', commands.ListBookmarksCommand('title')),
-            'D': Option('Delete a bookmark', commands.DeleteBookmarksCommand, get_delete_bookmark_data),
-            'U': Option('Update a bookmark', commands.EditBookmarksCommand, get_update_bookmark_data),
+            'D': Option('Delete a bookmark', commands.DeleteBookmarksCommand(), get_delete_bookmark_data),
+            'U': Option('Update a bookmark', commands.EditBookmarksCommand(), get_update_bookmark_data),
             'G': Option('Import GitHub starts', commands.ImportGithubStarsCommand(), github_import_options),
-            'Q': Option('Quit', commands.QuitCommand)
+            'Q': Option('Quit', commands.QuitCommand())
         }
         clear_screen()
         print_options(options)
@@ -110,5 +110,5 @@ def main():
         _ = input('Press ENTER to return to menu')
 
 if __name__ == '__main__':
-    commands.CreateBookmarksTableCommand.execute()
+    commands.CreateBookmarksTableCommand().execute()
     main()

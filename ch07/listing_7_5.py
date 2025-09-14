@@ -2,7 +2,7 @@ class Tire:  # <1>
     def __repr__(self):
         return 'A rubber tire'
     
-class SlimTire:
+class SlimTire(Tire):
     def __repr__(self):
         return 'A slim tire'
 
@@ -12,7 +12,7 @@ class Frame:
         return 'An aluminum frame'
 
 #listing 7.6
-class CarbonFiberFrame:
+class CarbonFiberFrame(Frame):
     def __repr__(self):
         return 'A carbon frame'
     
@@ -36,3 +36,6 @@ if __name__ == "__main__":
         frame=CarbonFiberFrame()
     )
     bike.print_specs()
+    print(type(SlimTire()))
+    print(isinstance(SlimTire(), Tire))
+    print(issubclass(SlimTire, Tire))
