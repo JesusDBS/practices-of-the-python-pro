@@ -40,7 +40,8 @@ class AddBookmarkCommand(Command):
             'bookmarks',
             data
         )
-        return "Bookmark added!"
+        # return "Bookmark added!"
+        return True, None
     
 # class ImportGithubStarsCommand:
     
@@ -159,7 +160,8 @@ class ImportGithubStarsCommand(Command):
                     timestamp=timestamp
                 )
         
-        return f'Imported {bookmarks_imported} bookmarks from starred repos!'
+        # return f'Imported {bookmarks_imported} bookmarks from starred repos!'
+        return True, bookmarks_imported
         
         
 class ListBookmarksCommand(Command):
@@ -172,7 +174,7 @@ class ListBookmarksCommand(Command):
             'bookmarks',
             order_by=self.order_by
             )
-        return res.fetchall()
+        return True, res.fetchall()
     
 class EditBookmarksCommand(Command):
     def execute(self, data):
@@ -182,14 +184,17 @@ class EditBookmarksCommand(Command):
                   update_values = data,
                   criteria=criteria
                   )
-        return 'Bookmark updated!'
+        # return 'Bookmark updated!'
+        return True, None
     
 class DeleteBookmarksCommand(Command):
     def execute(self, data=None):
         db.delete('bookmarks', {'id': data})
-        return 'Bookmark deleted!'
+        # return 'Bookmark deleted!'
+        return True, None
     
 class QuitCommand(Command):
     def execute(self, data=None):
         sys.exit()
+        return True, None
         

@@ -67,16 +67,27 @@ def github_import_options():
     }
 
 class Option:
-    def __init__(self, display_name, command, prep_step=None):
+    def __init__(self, display_name, command, success_message, prep_step=None):
         self.display_name = display_name
         self.command = command
+        self.success_message = success_message
         self.prep_step = prep_step
+        
+    def _print_success_message(self, status):
+        if status:
+            print(self.success_message, '\n')
+    
+    @staticmethod 
+    def _print_result(result):
+        if result is not None:
+            print(result)
         
     def choose(self):
         data = self.prep_step() if self.prep_step else None
-        message = self.command.execute(data) if data else\
+        status, result = self.command.execute(data) if data else\
             self.command.execute()
-        print(message)
+        self._print_success_message(status)
+        self._print_result(result)
         
     # def __call__(self):
     #     data = None
@@ -94,15 +105,15 @@ class Option:
 def main():
     while True:
         options = {
-            'A': Option('Add a bookmark', commands.AddBookmarkCommand(), get_add_bookmark_data),
-            'B': Option('List bookmarks by date', commands.ListBookmarksCommand()), 
-            'T': Option('List bookmarks by title', commands.ListBookmarksCommand('title')),
-            'D': Option('Delete a bookmark', commands.DeleteBookmarksCommand(), get_delete_bookmark_data),
-            'U': Option('Update a bookmark', commands.EditBookmarksCommand(), get_update_bookmark_data),
-            'G': Option('Import GitHub starts', commands.ImportGithubStarsCommand(), github_import_options),
-            'Q': Option('Quit', commands.QuitCommand())
+            'A': Option('Add a bookmark', commands.AddBookmarkCommand(), "Bookmark added!",get_add_bookmark_data),
+            'B': Option('List bookmarks by date',  commands.ListBookmarksCommand(), "Bookmarks listed!"), 
+            'T': Option('List bookmarks by title',  commands.ListBookmarksCommand('title'), "Bookmarks listed!"),
+            'D': Option('Delete a bookmark', commands.DeleteBookmarksCommand(), 'Bookmark deleted!', get_delete_bookmark_data),
+            'U': Option('Update a bookmark', commands.EditBookmarksCommand(), 'Bookmark updated!', get_update_bookmark_data),
+            'G': Option('Import GitHub starts', commands.ImportGithubStarsCommand(), "Bookmarks imported!", github_import_options),
+            'Q': Option('Quit', commands.QuitCommand(), "Good bay!")
         }
-        clear_screen()
+        clear_screen() 
         print_options(options)
         chosen_option = get_option_choice(options)
         clear_screen()
