@@ -121,5 +121,5 @@ def main():
         _ = input('Press ENTER to return to menu')
 
 if __name__ == '__main__':
-    commands.CreateBookmarksTableCommand().execute()
+    # commands.CreateBookmarksTableCommand().execute()
     main()

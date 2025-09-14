@@ -4,28 +4,29 @@ import requests
 from datetime import datetime, timezone
 from abc import ABC, abstractmethod
 
-from database import DatabaseManager
+from persistence import BookmarksDatabase
 
-db = DatabaseManager('bookmarks.db')
+persistence = BookmarksDatabase()
+# db = DatabaseManager('bookmarks.db')
 
 class Command(ABC):
     @abstractmethod
     def execute(self, data):
         raise NotImplementedError
 
-class CreateBookmarksTableCommand(Command):
-    def execute(self, data=None):
-        columns = {
-            'id': 'INTEGER PRIMARY KEY AUTOINCREMENT', 
-            'title': 'TEXT NOT NULL',
-            'url': 'TEXT NOT NULL',
-            'notes': 'TEXT',
-            'date_added': 'TEXT NOT NULL'
-        }
-        db.create_table(
-            'bookmarks',
-            columns
-        )
+# class CreateBookmarksTableCommand(Command):
+#     def execute(self, data=None):
+#         columns = {
+#             'id': 'INTEGER PRIMARY KEY AUTOINCREMENT', 
+#             'title': 'TEXT NOT NULL',
+#             'url': 'TEXT NOT NULL',
+#             'notes': 'TEXT',
+#             'date_added': 'TEXT NOT NULL'
+#         }
+#         db.create_table(
+#             'bookmarks',
+#             columns
+#         )
         
 class AddBookmarkCommand(Command):
     # def __init__(self, preserve_timestamp=False):
@@ -36,10 +37,11 @@ class AddBookmarkCommand(Command):
         # if not self.preserve_timestamp:
         
         data['date_added'] = timestamp or datetime.now(utc_tz).isoformat()
-        db.add(
-            'bookmarks',
-            data
-        )
+        # db.add(
+        #     'bookmarks',
+        #     data
+        # )
+        persistence.create(data)
         # return "Bookmark added!"
         return True, None
     
@@ -170,26 +172,32 @@ class ListBookmarksCommand(Command):
     
     def execute(self, data=None):
         # self.order_by = order_by
-        res = db.select(
-            'bookmarks',
-            order_by=self.order_by
-            )
+        # res = db.select(
+        #     'bookmarks',
+        #     order_by=self.order_by
+        #     )
+        res = persistence.list(self.order_by)
         return True, res.fetchall()
     
 class EditBookmarksCommand(Command):
     def execute(self, data):
         criteria = {'id': data['bookmark_id']}
         del data['bookmark_id']
-        db.update('bookmarks',
-                  update_values = data,
-                  criteria=criteria
-                  )
+        # db.update('bookmarks',
+        #           update_values = data,
+        #           criteria=criteria
+        #           )
+        persistence.edit(
+            bookmark_id=criteria,
+            data = data
+        )
         # return 'Bookmark updated!'
         return True, None
     
 class DeleteBookmarksCommand(Command):
     def execute(self, data=None):
-        db.delete('bookmarks', {'id': data})
+        # db.delete('bookmarks', {'id': data})
+        persistence.delete({'id': data})
         # return 'Bookmark deleted!'
         return True, None
     
